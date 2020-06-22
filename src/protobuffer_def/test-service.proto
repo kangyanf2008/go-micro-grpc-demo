@@ -1,0 +1,25 @@
+syntax = "proto3";
+option go_package = ".;protobuffer_def";
+
+import "google/protobuf/any.proto";
+
+service TestService {
+	rpc BaseInterface(BaseRequest) returns (BaseResponse) {}
+}
+
+enum CMD {
+    TEST_1 = 0;
+    TEST_2 = 1;
+  }
+
+message BaseRequest {
+	string requestId = 1;
+	CMD  c = 2;
+    google.protobuf.Any body = 3;
+}
+
+message BaseResponse {
+	string requestId = 1;
+	CMD  c = 2;
+	google.protobuf.Any body = 3;
+}
