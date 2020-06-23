@@ -26,21 +26,26 @@ func Start()  {
 		service.Name("test.client"),
 		service.Registry(r),
 	)
-	service.Client().Init(client.Retries(3),client.PoolSize(100), client.PoolTTL(time.Second*20), client.RequestTimeout(time.Second*5))
+	service.Client().Init(client.Retries(3),client.PoolSize(200), client.PoolTTL(time.Second*20), client.RequestTimeout(time.Second*5))
 
 	test :=  protobuffer_def.NewTestService("test.server", service.Client())
-
-	i := 0
-	for {
-		_, err := test.BaseInterface(context.Background(), &protobuffer_def.BaseRequest{RequestId:"1111",C:protobuffer_def.CMD_TEST_1})
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			i ++
-		}
-		if i % 10000 == 0 {
-			fmt.Println(i, time.Now().Unix())
-		}
+	for i:=0; i < 20; i++ {
+		go func() {
+			i := 0
+			for {
+				_, err := test.BaseInterface(context.Background(), &protobuffer_def.BaseRequest{RequestId:"1111",C:protobuffer_def.CMD_TEST_1})
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					i ++
+				}
+				if i % 10000 == 0 {
+					fmt.Println(i, time.Now().Unix())
+				}
+			}
+		}()
 	}
+
+
 
 }
