@@ -10,16 +10,10 @@ import (
 	"github.com/micro/go-plugins/registry/zookeeper/v2"
 
 	"go-micro-grpc-demo/protobuffer_def"
-	"sync"
 	"time"
 )
 
 func Start()  {
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	//ctx, cancel := context.WithCancel(context.Background())
-	//defer cancel()
 
 	r := zookeeper.NewRegistry(func(op *registry.Options) {
 		op.Addrs = []string{"127.0.0.1:2181"}
@@ -31,11 +25,6 @@ func Start()  {
 	service := grpc.NewService(
 		service.Name("test.client"),
 		service.Registry(r),
-		service.AfterStart(func() error {
-			wg.Done()
-			return nil
-		}),
-		//service.Context(ctx),
 	)
 	service.Client().Init(client.Retries(3),client.PoolSize(100), client.PoolTTL(time.Second*20), client.RequestTimeout(time.Second*5))
 
