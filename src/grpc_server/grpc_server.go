@@ -16,14 +16,15 @@ func Start(address string)  {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	r := zookeeper.NewRegistry(func(op *registry.Options) {
 		op.Addrs = []string{"127.0.0.1:2181"}
 		op.Context = context.Background()
 		op.Timeout = time.Second * 5
 	})
+
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// create GRPC service
 	service := grpc.NewService(
@@ -38,6 +39,7 @@ func Start(address string)  {
 		}),
 		service.Context(ctx),
 	)
+	wg.Wait()
 
 	service.Init()
 	// register test handler
