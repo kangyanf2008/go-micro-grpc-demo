@@ -19,8 +19,12 @@ date=`date "+%Y-%m-%d_%H:%I:%S"`
 
 goversion=`go version`
 
-ldflags="-X status-server/logic._AUTHOR_=$author -X status-server/logic._COMPILETIME_=\"$date\""
-echo ldflags ${ldflags}
+#客户端
+serverLdflags="-X server/logic._AUTHOR_=$author -X server/logic._COMPILETIME_=\"$date\""
+echo clientLdflags ${clientLdflags}
+#服务端
+clientLdflags="-X client/logic._AUTHOR_=$author -X client/logic._COMPILETIME_=\"$date\""
+echo clientLdflags ${clientLdflags}
 
 echo "formating code..."
 gofmt -w src/
@@ -29,11 +33,17 @@ gofmt -w src/
 #${GOROOT}/bin/goimports -w=true src/
 
 cd ./src/
-#${GOROOT}/bin/go install -v -ldflags "$ldflags"  main/main.go
-go install -v -ldflags "$ldflags"  main/main.go
+#${GOROOT}/bin/go install -v -clientLdflags "$clientLdflags"  main/main.go
+go install -v -ldflags "$clientLdflags"  main/client.go
 if [ $? == 0 ]; then
-	mv ../bin/main ../bin/status-server
-	echo "build success"
+	echo "build client success"
 else
-	echo "build error"
+	echo "build client error"
 fi
+go install -v -ldflags "$serverLdflags"  main/server.go
+if [ $? == 0 ]; then
+	echo "build server success"
+else
+	echo "build client error"
+fi
+
